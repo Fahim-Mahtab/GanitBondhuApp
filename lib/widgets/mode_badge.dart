@@ -14,13 +14,21 @@ class ModeBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: isLearn ? AppColors.learnLight : AppColors.practiceLight,
+        gradient: LinearGradient(
+          colors: isLearn
+              ? [AppColors.learnLight, AppColors.learnLight]
+              : [AppColors.practiceLight, AppColors.practiceLight],
+        ),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: (isLearn ? AppColors.learn : AppColors.practice).withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       child: Text(
         isLearn ? AppStrings.modeBadgeLearning : AppStrings.modeBadgePractice,
         style: TextStyle(
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: FontWeight.w700,
           color: isLearn ? AppColors.learn : AppColors.practice,
         ),

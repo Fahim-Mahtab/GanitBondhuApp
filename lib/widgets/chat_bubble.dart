@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ganitbondhu_app/constants/strings.dart';
 import 'package:ganitbondhu_app/models/message.dart';
 import 'package:ganitbondhu_app/theme/app_colors.dart';
+import 'package:ganitbondhu_app/theme/app_styles.dart';
 
 class ChatBubble extends StatelessWidget {
   final Message message;
@@ -30,16 +31,25 @@ class ChatBubble extends StatelessWidget {
       crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
         if (!isUser)
-          const Padding(
-            padding: EdgeInsets.only(left: 4, bottom: 6),
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 6),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.psychology, size: 13, color: AppColors.primary),
-                SizedBox(width: 4),
-                Text(AppStrings.chatAiName, style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                Container(
+                  width: 22, height: 22,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.primaryLight, AppColors.primaryLight.withValues(alpha: 0.3)],
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.psychology, size: 12, color: AppColors.primary),
+                ),
+                const SizedBox(width: 6),
+                Text(AppStrings.chatAiName, style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
                   color: AppColors.textMuted,
                 )),
               ],
@@ -51,12 +61,15 @@ class ChatBubble extends StatelessWidget {
           decoration: BoxDecoration(
             color: isUser ? AppColors.primary : AppColors.surface,
             borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(16),
-              topRight: const Radius.circular(16),
-              bottomLeft: isUser ? const Radius.circular(16) : const Radius.circular(4),
-              bottomRight: isUser ? const Radius.circular(4) : const Radius.circular(16),
+              topLeft: const Radius.circular(18),
+              topRight: const Radius.circular(18),
+              bottomLeft: isUser ? const Radius.circular(18) : const Radius.circular(6),
+              bottomRight: isUser ? const Radius.circular(6) : const Radius.circular(18),
             ),
-            border: isUser ? null : Border.all(color: AppColors.border),
+            border: isUser ? null : Border.all(color: AppColors.borderLight),
+            boxShadow: isUser
+                ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.15), blurRadius: 8, offset: const Offset(0, 3))]
+                : [AppShadow.card],
           ),
           child: Text(
             message.text,

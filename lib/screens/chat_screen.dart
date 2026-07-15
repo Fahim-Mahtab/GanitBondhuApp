@@ -10,6 +10,7 @@ import 'package:ganitbondhu_app/screens/same_level_screen.dart';
 import 'package:ganitbondhu_app/screens/login_screen.dart';
 import 'package:ganitbondhu_app/services/math_data.dart';
 import 'package:ganitbondhu_app/theme/app_colors.dart';
+import 'package:ganitbondhu_app/theme/app_styles.dart';
 import 'package:ganitbondhu_app/widgets/page_shell.dart';
 import 'package:ganitbondhu_app/widgets/top_bar.dart';
 import 'package:ganitbondhu_app/widgets/logout_button.dart';
@@ -117,9 +118,16 @@ class _ChatScreenState extends State<ChatScreen> {
                   right: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(AppStrings.chatPoints(_points),
-                        style: const TextStyle(fontFamily: 'Fredoka', fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.practice)),
-                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.practiceLight,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(AppStrings.chatPoints(_points),
+                          style: const TextStyle(fontFamily: 'Fredoka', fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.practice)),
+                      ),
+                      const SizedBox(width: 6),
                       LogoutButton(onTap: () => Navigator.pushAndRemoveUntil(
                         context, MaterialPageRoute(builder: (_) => const LoginScreen()), (_) => false,
                       )),
@@ -145,45 +153,46 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildWelcome(Color modeColor) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 80, height: 80,
+              width: 88, height: 88,
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                gradient: LinearGradient(
+                  colors: [AppColors.primaryLight, AppColors.primaryLight.withValues(alpha: 0.3)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFC7D2FE), width: 2),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.2), width: 2),
+                boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.1), blurRadius: 20, offset: const Offset(0, 4))],
               ),
-              child: const Center(child: Text('🤖')),
+              child: const Center(child: Text('🤖', style: TextStyle(fontSize: 40))),
             ),
-            const SizedBox(height: 16),
-                  const Text(AppStrings.chatWelcomeHeading, style: TextStyle(
-                    fontFamily: 'Fredoka',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.text,
-                  )),
+            const SizedBox(height: 20),
+            ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                colors: [AppColors.primary, AppColors.primaryDark],
+              ).createShader(bounds),
+              child: const Text(AppStrings.chatWelcomeHeading, style: TextStyle(
+                fontFamily: 'Fredoka',
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              )),
+            ),
             const SizedBox(height: 8),
             Text(
-                    AppStrings.chatWelcomeSubtitle(widget.subtopic.name, context.read<AppStateProvider>().mode == AppMode.learning ? AppStrings.chatWelcomeLearning : AppStrings.chatWelcomePractice),
-              style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
+              AppStrings.chatWelcomeSubtitle(widget.subtopic.name, context.read<AppStateProvider>().mode == AppMode.learning ? AppStrings.chatWelcomeLearning : AppStrings.chatWelcomePractice),
+              style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _start,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: modeColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: const Text(AppStrings.chatStartButton, style: TextStyle(
-                fontFamily: 'Fredoka',
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              )),
+            const SizedBox(height: 28),
+            _buildGradientButton(
+              label: AppStrings.chatStartButton,
+              color: modeColor,
+              onTap: _start,
             ),
           ],
         ),
@@ -215,7 +224,12 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Container(
             width: 28, height: 28,
-            decoration: BoxDecoration(color: AppColors.primaryLight, shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.primaryLight, AppColors.primaryLight.withValues(alpha: 0.3)],
+              ),
+              shape: BoxShape.circle,
+            ),
             child: const Center(child: Icon(Icons.psychology, size: 14, color: AppColors.primary)),
           ),
           const SizedBox(width: 8),
@@ -228,6 +242,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 bottomRight: Radius.circular(16), bottomLeft: Radius.circular(4),
               ),
               border: Border.all(color: AppColors.border),
+              boxShadow: [AppShadow.card],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -243,7 +258,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
       duration: const Duration(milliseconds: 800),
-          builder: (_, v, child) {
+      builder: (_, v, child) {
         final bounce = sin(v * pi * 2 + index * 2.0) * 0.5 + 0.5;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 3),
@@ -273,9 +288,14 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.learnLight,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFA7F3D0), width: 1.5),
+              gradient: LinearGradient(
+                colors: [AppColors.learnLight, AppColors.learnLight.withValues(alpha: 0.5)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.learn.withValues(alpha: 0.3), width: 1.5),
+              boxShadow: [BoxShadow(color: AppColors.learn.withValues(alpha: 0.1), blurRadius: 12, offset: const Offset(0, 4))],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,33 +313,16 @@ class _ChatScreenState extends State<ChatScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                const Text(AppStrings.chatMasteryPrompt,
-                  style: TextStyle(fontSize: 12, color: AppColors.textSub)),
+                const Text(AppStrings.chatMasteryPrompt, style: TextStyle(fontSize: 12, color: AppColors.textSub)),
                 const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => SameLevelScreen(topic: widget.topic, subtopic: widget.subtopic)),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.learn,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                    child: const Text(AppStrings.chatMasteryButton, style: TextStyle(
-                      fontFamily: 'Fredoka',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    )),
-                  ),
+                _buildGradientButton(
+                  label: AppStrings.chatMasteryButton,
+                  color: AppColors.learn,
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SameLevelScreen(topic: widget.topic, subtopic: widget.subtopic))),
                 ),
                 const SizedBox(height: 8),
                 const Center(
-                  child: Text('একই সাবটপিকে থাকতে চাইলে নিচের চ্যাটে প্রশ্ন করো।',
-                    style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                  child: Text(AppStrings.chatMasteryFootnote, style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
                 ),
               ],
             ),
@@ -331,67 +334,110 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildInputBar(Color modeColor) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      decoration: const BoxDecoration(
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+      decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.border)),
+        boxShadow: [
+          BoxShadow(color: AppColors.shadowLight, blurRadius: 8, offset: const Offset(0, -2)),
+        ],
       ),
       child: Row(
         children: [
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
               decoration: BoxDecoration(
                 color: AppColors.bg,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.borderLight),
               ),
               child: TextField(
                 controller: _inputCtrl,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: AppStrings.chatInputHint,
+                  hintStyle: TextStyle(color: AppColors.textExtraMuted, fontSize: 13),
                   border: InputBorder.none,
                   isDense: true,
-                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
                 ),
+                style: const TextStyle(color: AppColors.text, fontSize: 14),
                 onSubmitted: _sendMessage,
               ),
             ),
           ),
           const SizedBox(width: 8),
-          GestureDetector(
+          _buildIconButton(
+            icon: _recording ? Icons.mic_off : Icons.mic,
+            active: _recording,
+            activeColor: AppColors.danger,
             onTap: () => setState(() => _recording = !_recording),
-            child: Container(
-              width: 44, height: 44,
-              decoration: BoxDecoration(
-                color: _recording ? const Color(0xFFFEE2E2) : AppColors.bg,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: _recording ? const Color(0xFFFECACA) : AppColors.border),
-              ),
-              child: Icon(
-                _recording ? Icons.mic_off : Icons.mic,
-                size: 18,
-                color: _recording ? AppColors.danger : AppColors.textMuted,
-              ),
-            ),
           ),
           const SizedBox(width: 8),
-          GestureDetector(
-            onTap: _loading || _inputCtrl.text.trim().isEmpty ? null : () => _sendMessage(_inputCtrl.text),
-            child: Container(
-              width: 44, height: 44,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Center(
-                child: _loading
-                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Icon(Icons.send, size: 17, color: Colors.white),
-              ),
-            ),
-          ),
+          _buildSendButton(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildIconButton({
+    required IconData icon,
+    required bool active,
+    required Color activeColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 44, height: 44,
+        decoration: BoxDecoration(
+          color: active ? activeColor.withValues(alpha: 0.1) : AppColors.bg,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: active ? activeColor.withValues(alpha: 0.3) : AppColors.borderLight),
+        ),
+        child: Icon(icon, size: 18, color: active ? activeColor : AppColors.textMuted),
+      ),
+    );
+  }
+
+  Widget _buildSendButton() {
+    final canSend = !_loading && _inputCtrl.text.trim().isNotEmpty;
+    return GestureDetector(
+      onTap: canSend ? () => _sendMessage(_inputCtrl.text) : null,
+      child: Container(
+        width: 44, height: 44,
+        decoration: BoxDecoration(
+          gradient: canSend ? AppGradient.primary : LinearGradient(
+            colors: [AppColors.border, AppColors.borderLight],
+          ),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: canSend ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 3))] : null,
+        ),
+        child: Center(
+          child: _loading
+            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+            : Icon(Icons.send_rounded, size: 17, color: canSend ? Colors.white : AppColors.textExtraMuted),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGradientButton({required String label, required Color color, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [color, color.withValues(alpha: 0.8)], begin: Alignment.centerLeft, end: Alignment.centerRight),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4))],
+        ),
+        child: Text(label, textAlign: TextAlign.center, style: const TextStyle(
+          fontFamily: 'Fredoka',
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+        )),
       ),
     );
   }

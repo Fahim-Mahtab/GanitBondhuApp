@@ -6,11 +6,13 @@ import 'package:ganitbondhu_app/screens/subtopics_screen.dart';
 import 'package:ganitbondhu_app/screens/login_screen.dart';
 import 'package:ganitbondhu_app/services/math_data.dart';
 import 'package:ganitbondhu_app/theme/app_colors.dart';
+import 'package:ganitbondhu_app/theme/app_styles.dart';
 import 'package:ganitbondhu_app/widgets/page_shell.dart';
 import 'package:ganitbondhu_app/widgets/top_bar.dart';
 import 'package:ganitbondhu_app/widgets/logout_button.dart';
 import 'package:ganitbondhu_app/widgets/back_button.dart';
 import 'package:ganitbondhu_app/widgets/mode_badge.dart';
+import 'package:ganitbondhu_app/widgets/press_scale.dart';
 
 class TopicsScreen extends StatelessWidget {
   const TopicsScreen({super.key});
@@ -20,6 +22,7 @@ class TopicsScreen extends StatelessWidget {
     final state = context.watch<AppStateProvider>();
 
     return PageShell(
+      gradientBg: true,
       child: SafeArea(
         child: Column(
           children: [
@@ -35,39 +38,40 @@ class TopicsScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  Row(
-                    children: [
-                      ModeBadge(mode: state.mode),
-                      const SizedBox(width: 8),
-                      const Text(AppStrings.topicsPrompt, style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textMuted,
-                      )),
-                    ],
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryLight,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        ModeBadge(mode: state.mode),
+                        const SizedBox(width: 10),
+                        const Text(AppStrings.topicsPrompt, style: TextStyle(fontSize: 13, color: AppColors.textSub)),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   ...MathData.topics.map((topic) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => SubtopicsScreen(topic: topic)),
-                      ),
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: PressScale(
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SubtopicsScreen(topic: topic))),
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.border),
-                          boxShadow: const [BoxShadow(color: Color(0x0A000000), blurRadius: 4, offset: Offset(0, 1))],
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: AppColors.borderLight),
+                          boxShadow: [AppShadow.card],
                         ),
                         child: Row(
                           children: [
                             Container(
-                              width: 44, height: 44,
+                              width: 48, height: 48,
                               decoration: BoxDecoration(
-                                color: topic.id.color.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
+                                gradient: AppGradient.topic(topic.id.name),
+                                borderRadius: BorderRadius.circular(14),
                               ),
                               child: Icon(topic.icon, size: 22, color: topic.id.color),
                             ),
@@ -82,6 +86,7 @@ class TopicsScreen extends StatelessWidget {
                                     fontWeight: FontWeight.w700,
                                     color: AppColors.text,
                                   )),
+                                  const SizedBox(height: 2),
                                   Text(topic.subname, style: const TextStyle(
                                     fontSize: 12,
                                     color: AppColors.textMuted,
@@ -89,7 +94,14 @@ class TopicsScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            const Icon(Icons.chevron_right, color: AppColors.textMuted),
+                            Container(
+                              width: 26, height: 26,
+                              decoration: BoxDecoration(
+                                color: AppColors.bg,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(Icons.chevron_right, size: 16, color: AppColors.textExtraMuted),
+                            ),
                           ],
                         ),
                       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ganitbondhu_app/theme/app_colors.dart';
+import 'package:ganitbondhu_app/widgets/press_scale.dart';
 
 class AppBackButton extends StatelessWidget {
   final String label;
@@ -9,15 +10,16 @@ class AppBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return PressScale(
+      scale: 0.93,
       onTap: onTap,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.chevron_left, size: 18, color: AppColors.primary),
+          const Icon(Icons.chevron_left, size: 20, color: AppColors.primary),
           const SizedBox(width: 2),
           Text(label, style: const TextStyle(
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: FontWeight.w600,
             color: AppColors.primary,
           )),

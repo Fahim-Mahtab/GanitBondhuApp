@@ -7,11 +7,13 @@ import 'package:ganitbondhu_app/screens/subtopics_screen.dart';
 import 'package:ganitbondhu_app/screens/dashboard_screen.dart';
 import 'package:ganitbondhu_app/services/math_data.dart';
 import 'package:ganitbondhu_app/theme/app_colors.dart';
+import 'package:ganitbondhu_app/theme/app_styles.dart';
 import 'package:ganitbondhu_app/widgets/page_shell.dart';
 import 'package:ganitbondhu_app/widgets/top_bar.dart';
 import 'package:ganitbondhu_app/widgets/logout_button.dart';
 import 'package:ganitbondhu_app/widgets/back_button.dart';
 import 'package:ganitbondhu_app/widgets/diff_badge.dart';
+import 'package:ganitbondhu_app/widgets/press_scale.dart';
 
 class SameLevelScreen extends StatelessWidget {
   final Topic topic;
@@ -26,6 +28,7 @@ class SameLevelScreen extends StatelessWidget {
     final others = subs.where((s) => s.difficulty == level && s.id != subtopic.id).toList();
 
     return PageShell(
+      gradientBg: true,
       child: SafeArea(
         child: Column(
           children: [
@@ -44,21 +47,24 @@ class SameLevelScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryLight,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFC7D2FE)),
+                      gradient: LinearGradient(
+                        colors: [AppColors.primaryLight, AppColors.primaryLight.withValues(alpha: 0.3)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.only(top: 2),
+                          padding: EdgeInsets.only(top: 1),
                           child: Icon(Icons.trending_up, size: 18, color: AppColors.primary),
                         ),
                         const SizedBox(width: 12),
                         const Expanded(
-                          child: Text('🎯 একই কঠিনতার সাবটপিক যেগুলো এখনো আয়ত্ত হয়নি সেগুলো দেখাচ্ছি।',
-                            style: TextStyle(fontSize: 14, color: AppColors.primary)),
+                          child: Text(AppStrings.sameLevelInfo, style: TextStyle(fontSize: 13, color: AppColors.primary, height: 1.4)),
                         ),
                       ],
                     ),
@@ -71,10 +77,16 @@ class SameLevelScreen extends StatelessWidget {
                         children: [
                           Container(
                             width: 64, height: 64,
-                            decoration: BoxDecoration(color: AppColors.learnLight, shape: BoxShape.circle),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [AppColors.learnLight, AppColors.learnLight.withValues(alpha: 0.3)],
+                              ),
+                              shape: BoxShape.circle,
+                              boxShadow: [BoxShadow(color: AppColors.learn.withValues(alpha: 0.15), blurRadius: 16)],
+                            ),
                             child: const Icon(Icons.check_circle, size: 32, color: AppColors.learn),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 16),
                           const Text(AppStrings.sameLevelEmpty,
                             style: TextStyle(fontFamily: 'Fredoka', fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.text),
                           ),
@@ -83,8 +95,8 @@ class SameLevelScreen extends StatelessWidget {
                     )
                   else
                     ...others.map((sub) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: GestureDetector(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: PressScale(
                         onTap: () => Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (_) => ChatScreen(topic: topic, subtopic: sub)),
@@ -93,16 +105,16 @@ class SameLevelScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.border),
-                            boxShadow: const [BoxShadow(color: Color(0x0A000000), blurRadius: 4, offset: Offset(0, 1))],
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: AppColors.borderLight),
+                            boxShadow: [AppShadow.card],
                           ),
                           child: Row(
                             children: [
                               Container(
-                                width: 40, height: 40,
+                                width: 44, height: 44,
                                 decoration: BoxDecoration(
-                                  color: AppColors.primaryLight,
+                                  gradient: AppGradient.topic(topic.id.name),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: const Icon(Icons.extension, size: 20, color: AppColors.primary),
@@ -118,66 +130,80 @@ class SameLevelScreen extends StatelessWidget {
                                       fontWeight: FontWeight.w700,
                                       color: AppColors.text,
                                     )),
-                                    const SizedBox(height: 4),
+                                    const SizedBox(height: 6),
                                     DiffBadge(level: sub.difficulty),
                                   ],
                                 ),
                               ),
-                              const Icon(Icons.chevron_right, color: AppColors.textMuted),
+                              Container(
+                                width: 26, height: 26,
+                                decoration: BoxDecoration(
+                                  color: AppColors.bg,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(Icons.chevron_right, size: 16, color: AppColors.textExtraMuted),
+                              ),
                             ],
                           ),
                         ),
                       ),
                     )),
                   const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => SubtopicsScreen(topic: topic)),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.textSub,
-                        side: BorderSide(color: AppColors.border),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: Text(AppStrings.sameLevelShowAll, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                    ),
+                  _buildActionButton(
+                    label: AppStrings.sameLevelShowAll,
+                    outlined: true,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SubtopicsScreen(topic: topic))),
                   ),
                   const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (_) => const DashboardScreen()),
-                        (_) => false,
-                      ),
-                      child: const Text(AppStrings.sameLevelDashboard, style: TextStyle(
-                        fontFamily: 'Fredoka',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                      )),
+                  _buildActionButton(
+                    label: AppStrings.sameLevelDashboard,
+                    onTap: () => Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const DashboardScreen()),
+                      (_) => false,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.science, size: 12, color: AppColors.textMuted),
-                      const SizedBox(width: 6),
-                      Text(AppStrings.developedBy,
-                        style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
-                    ],
-                  ),
+                  _buildFooter(),
                 ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildActionButton({required String label, bool outlined = false, required VoidCallback onTap}) {
+    return PressScale(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          gradient: outlined ? null : AppGradient.primary,
+          borderRadius: BorderRadius.circular(14),
+          border: outlined ? Border.all(color: AppColors.border) : null,
+          boxShadow: outlined ? null : [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4))],
+        ),
+        child: Text(label, textAlign: TextAlign.center, style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          fontFamily: outlined ? null : 'Fredoka',
+          color: outlined ? AppColors.textSub : Colors.white,
+        )),
+      ),
+    );
+  }
+
+  Widget _buildFooter() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(Icons.science_outlined, size: 12, color: AppColors.textExtraMuted),
+        const SizedBox(width: 6),
+        Text(AppStrings.developedBy, style: TextStyle(fontSize: 11, color: AppColors.textExtraMuted)),
+      ],
     );
   }
 }

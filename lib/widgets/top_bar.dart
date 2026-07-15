@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ganitbondhu_app/theme/app_colors.dart';
+import 'package:ganitbondhu_app/theme/app_styles.dart';
 
 class TopBar extends StatelessWidget {
   final Widget? left;
@@ -18,36 +19,35 @@ class TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.only(left: 16, right: 12, top: 12, bottom: 12),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(bottom: BorderSide(color: AppColors.border)),
+        boxShadow: [AppShadow.card],
       ),
       child: Row(
         children: [
-          Expanded(flex: 1, child: left ?? const SizedBox.shrink()),
-          Flexible(
-            flex: 2,
-            child: Column(
-              children: [
-                if (title != null)
-                  FittedBox(
-                    child: Text(title!, style: const TextStyle(
-                      fontFamily: 'Fredoka',
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                      color: AppColors.text,
-                    )),
-                  ),
-                if (subtitle != null)
-                  Text(subtitle!, style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textMuted,
+          if (left != null) Align(alignment: Alignment.centerLeft, child: left!),
+          if (left != null) const SizedBox(width: 8),
+          if (title != null)
+            Expanded(
+              child: Column(
+                children: [
+                  Text(title!, style: const TextStyle(
+                    fontFamily: 'Fredoka',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: AppColors.text,
                   )),
-              ],
+                  if (subtitle != null)
+                    Text(subtitle!, style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textMuted,
+                    )),
+                ],
+              ),
             ),
-          ),
-          Expanded(flex: 1, child: right != null ? Align(alignment: Alignment.centerRight, child: right) : const SizedBox.shrink()),
+          if (right != null) const SizedBox(width: 8),
+          if (right != null) Align(alignment: Alignment.centerRight, child: right!),
         ],
       ),
     );

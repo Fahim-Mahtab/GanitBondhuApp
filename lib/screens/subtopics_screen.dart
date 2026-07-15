@@ -7,12 +7,14 @@ import 'package:ganitbondhu_app/screens/chat_screen.dart';
 import 'package:ganitbondhu_app/screens/login_screen.dart';
 import 'package:ganitbondhu_app/services/math_data.dart';
 import 'package:ganitbondhu_app/theme/app_colors.dart';
+import 'package:ganitbondhu_app/theme/app_styles.dart';
 import 'package:ganitbondhu_app/widgets/page_shell.dart';
 import 'package:ganitbondhu_app/widgets/top_bar.dart';
 import 'package:ganitbondhu_app/widgets/logout_button.dart';
 import 'package:ganitbondhu_app/widgets/back_button.dart';
 import 'package:ganitbondhu_app/widgets/mode_badge.dart';
 import 'package:ganitbondhu_app/widgets/diff_badge.dart';
+import 'package:ganitbondhu_app/widgets/press_scale.dart';
 
 class SubtopicsScreen extends StatelessWidget {
   final Topic topic;
@@ -25,6 +27,7 @@ class SubtopicsScreen extends StatelessWidget {
     final subs = MathData.subtopics[topic.id] ?? [];
 
     return PageShell(
+      gradientBg: true,
       child: SafeArea(
         child: Column(
           children: [
@@ -40,33 +43,37 @@ class SubtopicsScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  Row(
-                    children: [
-                      ModeBadge(mode: state.mode),
-                    ],
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.bg,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        ModeBadge(mode: state.mode),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   ...subs.map((sub) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => ChatScreen(topic: topic, subtopic: sub)),
-                      ),
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: PressScale(
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(topic: topic, subtopic: sub))),
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.border),
-                          boxShadow: const [BoxShadow(color: Color(0x0A000000), blurRadius: 4, offset: Offset(0, 1))],
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: AppColors.borderLight),
+                          boxShadow: [AppShadow.card],
                         ),
                         child: Row(
                           children: [
                             Container(
-                              width: 40, height: 40,
+                              width: 44, height: 44,
                               decoration: BoxDecoration(
-                                color: AppColors.primaryLight,
+                                gradient: AppGradient.topic(topic.id.name),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Icon(Icons.extension, size: 20, color: AppColors.primary),
@@ -82,12 +89,19 @@ class SubtopicsScreen extends StatelessWidget {
                                     fontWeight: FontWeight.w700,
                                     color: AppColors.text,
                                   )),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 6),
                                   DiffBadge(level: sub.difficulty),
                                 ],
                               ),
                             ),
-                            const Icon(Icons.chevron_right, color: AppColors.textMuted),
+                            Container(
+                              width: 26, height: 26,
+                              decoration: BoxDecoration(
+                                color: AppColors.bg,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(Icons.chevron_right, size: 16, color: AppColors.textExtraMuted),
+                            ),
                           ],
                         ),
                       ),
