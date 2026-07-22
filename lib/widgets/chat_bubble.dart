@@ -44,7 +44,7 @@ class ChatBubble extends StatelessWidget {
                     ),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.psychology, size: 12, color: AppColors.primary),
+                  child: ClipOval(child: Image.asset('assets/ai_chat_logo.png', width: 16, height: 16, fit: BoxFit.cover)),
                 ),
                 const SizedBox(width: 6),
                 Text(AppStrings.chatAiName, style: const TextStyle(

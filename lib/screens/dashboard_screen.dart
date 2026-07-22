@@ -33,7 +33,7 @@ class DashboardScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildModeCard(
                     context, state,
-                    Icons.psychology,
+                    Icons.menu_book,
                     AppStrings.dashboardLearningTitle,
                     AppStrings.dashboardLearningSub,
                     AppColors.learn,
@@ -228,7 +228,7 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildStatsGrid() {
     final stats = [
-      (Icons.psychology, AppStrings.dashboardStatTotalPoints, '142', AppColors.primary),
+      (Icons.auto_awesome, AppStrings.dashboardStatTotalPoints, '142', AppColors.primary),
       (Icons.star, AppStrings.dashboardStatTodayPoints, '18', AppColors.practice),
       (Icons.emoji_events, AppStrings.dashboardStatStreak, '7', AppColors.learn),
       (Icons.workspace_premium, AppStrings.dashboardStatBadges, '4', const Color(0xFF7C3AED)),

@@ -169,7 +169,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 border: Border.all(color: AppColors.primary.withValues(alpha: 0.2), width: 2),
                 boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.1), blurRadius: 20, offset: const Offset(0, 4))],
               ),
-              child: const Center(child: Text('🤖', style: TextStyle(fontSize: 40))),
+              child: ClipOval(child: Image.asset('assets/ai_chat_logo.png', width: 48, height: 48, fit: BoxFit.cover)),
             ),
             const SizedBox(height: 20),
             ShaderMask(
@@ -230,7 +230,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               shape: BoxShape.circle,
             ),
-            child: const Center(child: Icon(Icons.psychology, size: 14, color: AppColors.primary)),
+            child: ClipOval(child: Image.asset('assets/ai_chat_logo.png', width: 18, height: 18, fit: BoxFit.cover)),
           ),
           const SizedBox(width: 8),
           Container(
