@@ -5,7 +5,6 @@ class AppStrings {
   static const developedBy = 'Developed by Data & Design Lab';
 
   static const loginTitle = 'গণিতবন্ধু';
-  static const loginTagline = 'স্মার্ট গণিত সহচর';
   static const loginCardTitle = 'স্বাগতম! 👋';
   static const loginCardSubtitle = 'তোমার অ্যাকাউন্টে লগইন করো';
   static const loginUsernameHint = 'ব্যবহারকারীর নাম';

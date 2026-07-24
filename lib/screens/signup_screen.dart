@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:ganitbondhu_app/constants/strings.dart';
 import 'package:ganitbondhu_app/providers/app_state_provider.dart';
 import 'package:ganitbondhu_app/screens/dashboard_screen.dart';
+import 'package:ganitbondhu_app/services/api_service.dart';
 import 'package:ganitbondhu_app/theme/app_colors.dart';
 import 'package:ganitbondhu_app/theme/app_styles.dart';
 import 'package:ganitbondhu_app/widgets/page_shell.dart';
@@ -20,6 +21,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final _passCtrl = TextEditingController();
   String _grade = '5';
   bool _verified = false;
+  bool _loading = false;
+  String? _error;
 
   @override
   void dispose() {
@@ -29,14 +32,30 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void _handleSignup() {
-    final provider = context.read<AppStateProvider>();
-    provider.setUsername(_nameCtrl.text.trim().isEmpty ? AppStrings.signupDefaultUsername : _nameCtrl.text.trim());
-    provider.setGrade(_grade);
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => const DashboardScreen()),
-      (_) => false,
-    );
+    final name = _nameCtrl.text.trim();
+    final pass = _passCtrl.text.trim();
+    if (name.isEmpty) { setState(() => _error = 'নাম দাও!'); return; }
+    if (pass.isEmpty) { setState(() => _error = 'পাসওয়ার্ড দাও!'); return; }
+    if (!_verified) { setState(() => _error = 'নিশ্চিত করো যে তুমি মানুষ!'); return; }
+    setState(() { _loading = true; _error = null; });
+    ApiService.signup(name, int.parse(_grade), pass).then((res) {
+      if (!mounted) return;
+      if (res['success'] == true) {
+        final provider = context.read<AppStateProvider>();
+        provider.setUsername(name);
+        provider.setGrade(_grade);
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const DashboardScreen()),
+          (_) => false,
+        );
+      } else {
+        setState(() { _loading = false; _error = res['error'] as String? ?? 'Signup failed'; });
+      }
+    }).catchError((e) {
+      if (!mounted) return;
+      setState(() { _loading = false; _error = 'সার্ভারে সংযোগ করা যায়নি'; });
+    });
   }
 
   @override
@@ -118,6 +137,24 @@ class _SignupScreenState extends State<SignupScreen> {
             color: AppColors.textMuted,
           )),
           const SizedBox(height: 20),
+          if (_error != null)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: AppColors.dangerLight,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.danger.withValues(alpha: 0.2)),
+              ),
+              child: Row(
+                children: [
+                  const Text('⚠️', style: TextStyle(fontSize: 14)),
+                  const SizedBox(width: 8),
+                  Text(_error!, style: const TextStyle(color: AppColors.danger, fontSize: 13, fontWeight: FontWeight.w500)),
+                ],
+              ),
+            ),
           _buildInputField(controller: _nameCtrl, hint: AppStrings.signupNameHint, icon: Icons.person_outline),
           const SizedBox(height: 12),
           _buildDropdownField(),
@@ -126,7 +163,7 @@ class _SignupScreenState extends State<SignupScreen> {
           const SizedBox(height: 12),
           _buildCheckboxRow(),
           const SizedBox(height: 20),
-          _buildPrimaryButton(label: AppStrings.signupButton, onTap: _handleSignup),
+          _buildPrimaryButton(label: AppStrings.signupButton, onTap: _loading ? null : _handleSignup, isLoading: _loading),
           const SizedBox(height: 12),
           PressScale(
             onTap: () => Navigator.pop(context),
@@ -226,9 +263,9 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _buildPrimaryButton({required String label, required VoidCallback onTap}) {
+  Widget _buildPrimaryButton({required String label, VoidCallback? onTap, bool isLoading = false}) {
     return PressScale(
-      onTap: onTap,
+      onTap: isLoading ? null : onTap,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -237,12 +274,14 @@ class _SignupScreenState extends State<SignupScreen> {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4))],
         ),
-        child: Text(label, textAlign: TextAlign.center, style: const TextStyle(
-          fontFamily: 'Fredoka',
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          color: AppColors.primaryText,
-        )),
+        child: isLoading
+          ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppColors.primaryText))
+          : Text(label, textAlign: TextAlign.center, style: const TextStyle(
+              fontFamily: 'Fredoka',
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.primaryText,
+            )),
       ),
     );
   }

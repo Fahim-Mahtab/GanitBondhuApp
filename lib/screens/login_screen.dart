@@ -5,6 +5,7 @@ import 'package:ganitbondhu_app/constants/strings.dart';
 import 'package:ganitbondhu_app/providers/app_state_provider.dart';
 import 'package:ganitbondhu_app/screens/signup_screen.dart';
 import 'package:ganitbondhu_app/screens/dashboard_screen.dart';
+import 'package:ganitbondhu_app/services/api_service.dart';
 import 'package:ganitbondhu_app/theme/app_colors.dart';
 import 'package:ganitbondhu_app/theme/app_styles.dart';
 import 'package:ganitbondhu_app/widgets/page_shell.dart';
@@ -21,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   final _userCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   bool _showPass = false;
+  bool _loading = false;
   String? _error;
   late AnimationController _bgAnimCtrl;
 
@@ -44,8 +46,20 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final pass = _passCtrl.text.trim();
     if (user.isEmpty) { setState(() => _error = AppStrings.loginErrorUsername); return; }
     if (pass.isEmpty) { setState(() => _error = AppStrings.loginErrorPassword); return; }
-    context.read<AppStateProvider>().setUsername(user);
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const DashboardScreen()));
+    setState(() { _loading = true; _error = null; });
+    ApiService.login(user, pass).then((res) {
+      if (!mounted) return;
+      if (res['success'] == true) {
+        context.read<AppStateProvider>().setUsername(res['username'] as String);
+        context.read<AppStateProvider>().setGrade('${res['grade']}');
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const DashboardScreen()));
+      } else {
+        setState(() { _loading = false; _error = res['error'] as String? ?? 'Login failed'; });
+      }
+    }).catchError((e) {
+      if (!mounted) return;
+      setState(() { _loading = false; _error = 'সার্ভারে সংযোগ করা যায়নি'; });
+    });
   }
 
   @override
@@ -129,21 +143,11 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           )),
         ),
         const SizedBox(height: 6),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color: AppColors.primaryLight,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(AppStrings.loginTagline, style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: AppColors.primary.withValues(alpha: 0.8),
-          )),
-        ),
+        
       ],
     );
   }
+
 
   Widget _buildLoginCard() {
     return Container(
@@ -212,7 +216,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           const SizedBox(height: 20),
           _buildPrimaryButton(
             label: AppStrings.loginButton,
-            onTap: _handleLogin,
+            onTap: _loading ? null : _handleLogin,
+            isLoading: _loading,
           ),
           const SizedBox(height: 16),
           Row(
@@ -268,9 +273,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildPrimaryButton({required String label, required VoidCallback onTap}) {
+  Widget _buildPrimaryButton({required String label, VoidCallback? onTap, bool isLoading = false}) {
     return PressScale(
-      onTap: onTap,
+      onTap: isLoading ? null : onTap,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -281,12 +286,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4)),
           ],
         ),
-        child: Text(label, textAlign: TextAlign.center, style: const TextStyle(
-          fontFamily: 'Fredoka',
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          color: AppColors.primaryText,
-        )),
+        child: isLoading
+          ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppColors.primaryText))
+          : Text(label, textAlign: TextAlign.center, style: const TextStyle(
+              fontFamily: 'Fredoka',
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.primaryText,
+            )),
       ),
     );
   }

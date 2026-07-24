@@ -247,7 +247,7 @@ class DashboardScreen extends StatelessWidget {
       itemBuilder: (_, i) {
         final (icon, label, value, color) = stats[i];
         return Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(14), 
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(16),
